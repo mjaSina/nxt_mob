@@ -17,6 +17,7 @@ interface ApiEndpoint {
 
 export interface ApiConfig {
   queryKey: string[];
+  invalidateKeys?: string[][];
   get: string | ApiEndpoint;
   post?: string | ApiEndpoint;
   put?: string | ApiEndpoint;
@@ -30,9 +31,10 @@ interface FetchOptions {
   headers?: Record<string, string>;
 }
 
-function resolveEndpoint(
-  endpoint: string | ApiEndpoint
-): { url: string; method: HttpMethod } {
+function resolveEndpoint(endpoint: string | ApiEndpoint): {
+  url: string;
+  method: HttpMethod;
+} {
   if (typeof endpoint === "string") {
     return { url: endpoint, method: "GET" };
   }
@@ -48,7 +50,7 @@ function buildUrl(url: string, params?: Record<string, string>): string {
 async function request<T>(
   endpoint: string | ApiEndpoint,
   defaultMethod: HttpMethod,
-  options?: FetchOptions
+  options?: FetchOptions,
 ): Promise<T> {
   const { url, method: endpointMethod } = resolveEndpoint(endpoint);
   const method = endpointMethod !== "GET" ? endpointMethod : defaultMethod;
@@ -72,7 +74,7 @@ async function request<T>(
 
 export function useApi<TData = unknown>(
   config: ApiConfig,
-  queryOptions?: Omit<UseQueryOptions<TData>, "queryKey" | "queryFn">
+  queryOptions?: Omit<UseQueryOptions<TData>, "queryKey" | "queryFn">,
 ) {
   const queryClient = useQueryClient();
 
@@ -85,13 +87,16 @@ export function useApi<TData = unknown>(
     ...queryOptions,
   });
 
+  const allKeys = [config.queryKey, ...(config.invalidateKeys ?? [])];
   const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: config.queryKey });
+    Promise.all(
+      allKeys.map((key) => queryClient.invalidateQueries({ queryKey: key })),
+    );
 
-  const createMutationFor = <TBody = unknown, TResponse = unknown>(
+  const useMutationFor = <TBody = unknown, TResponse = unknown>(
     endpoint: string | ApiEndpoint | undefined,
     defaultMethod: HttpMethod,
-    options?: UseMutationOptions<TResponse, Error, TBody>
+    options?: UseMutationOptions<TResponse, Error, TBody>,
   ) =>
     useMutation<TResponse, Error, TBody>({
       mutationFn: (body: TBody) =>
@@ -104,20 +109,16 @@ export function useApi<TData = unknown>(
     });
 
   /* eslint-disable react-hooks/rules-of-hooks */
-  const post = config.post
-    ? createMutationFor(config.post, "POST")
-    : undefined;
+  const post = config.post ? useMutationFor(config.post, "POST") : undefined;
 
-  const put = config.put
-    ? createMutationFor(config.put, "PUT")
-    : undefined;
+  const put = config.put ? useMutationFor(config.put, "PUT") : undefined;
 
   const patch = config.patch
-    ? createMutationFor(config.patch, "PATCH")
+    ? useMutationFor(config.patch, "PATCH")
     : undefined;
 
   const remove = config.delete
-    ? createMutationFor(config.delete, "DELETE")
+    ? useMutationFor(config.delete, "DELETE")
     : undefined;
   /* eslint-enable react-hooks/rules-of-hooks */
 
@@ -130,3 +131,15 @@ export function useApi<TData = unknown>(
     invalidate,
   };
 }
+
+// const api = useApi({
+//   queryKey: ["posts"],
+//   invalidateKeys: [["users"], ["comments"]],
+//   get: "/api/posts",
+//   post: { url: "/api/posts", method: "POST" },
+// });
+
+// وقتی post.mutate() صدا زده بشه و موفق بشه:
+// 1. کوئری ["posts"] (queryKey خودش) invalidate میشه
+// 2. کوئری ["users"] invalidate میشه
+// 3. کوئری ["comments"] invalidate میشه
