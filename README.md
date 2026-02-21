@@ -92,3 +92,11 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - **Logged-in redirect**: authenticated users visiting public paths (e.g. `/login`) are redirected to `/`
 - **Security headers**: sets `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, and `Permissions-Policy` on every response
 - **Matcher**: excludes static assets (`_next/static`, `_next/image`, images, favicon) from proxy execution
+
+### `12005c7` — Add server-side API proxy with multi-service routing and cookie-based auth
+
+- Created catch-all API route (`src/app/api/[...path]/route.ts`) that proxies client requests to backend services based on URL path prefix (e.g. `/api/main/...` → main service, `/api/auth/...` → auth service) with `Bearer` token injection
+- Added cookie-based token helpers in `src/lib/auth.ts`: `setToken`, `getToken`, `removeToken` — uses `httpOnly` secure cookies with 7-day expiry
+- Changed Axios `baseURL` from `NEXT_PUBLIC_API_BASE_URL` to `/api` so all client-side requests go through the Next.js API proxy (no more exposed backend URLs on the client)
+- Updated API configs (`posts.ts`, `users.ts`) to include service prefixes (`/main/posts`, `/auth/users`)
+- Integrated `setToken` into login action on successful login, added `logoutAction` for clearing the token

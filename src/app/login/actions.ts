@@ -1,5 +1,7 @@
 "use server";
 
+import { setToken, removeToken } from "@/lib/auth";
+
 export type LoginState = {
   success: boolean;
   message: string;
@@ -19,10 +21,20 @@ export async function loginAction(
     };
   }
 
-  // TODO: replace with real authentication logic
+  // TODO: replace with real backend API call
+  // const res = await fetch(`${process.env.API_BASE_URL}/auth/login`, {
+  //   method: "POST",
+  //   headers: { "Content-Type": "application/json" },
+  //   body: JSON.stringify({ email, password }),
+  // });
+  // const data = await res.json();
+  // if (!res.ok) return { success: false, message: data.message };
+  // await setToken(data.token);
+
   await new Promise((resolve) => setTimeout(resolve, 1500));
 
   if (email === "admin@example.com" && password === "123456") {
+    await setToken("fake-jwt-token-replace-with-real-one");
     return {
       success: true,
       message: "ورود موفقیت‌آمیز بود",
@@ -33,4 +45,8 @@ export async function loginAction(
     success: false,
     message: "ایمیل یا رمز عبور اشتباه است",
   };
+}
+
+export async function logoutAction() {
+  await removeToken();
 }

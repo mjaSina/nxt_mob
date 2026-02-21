@@ -2,8 +2,8 @@ import type { ApiConfig } from "@/hooks/use-api";
 
 export const postsApi: ApiConfig = {
   queryKey: ["posts"],
-  get: "/posts",
-  post: "/posts",
-  put: "/posts",
-  delete: "/posts",
+  get: "/main/posts",
+  post: "/main/posts",
+  put: "/main/posts",
+  delete: "/main/posts",
 };
