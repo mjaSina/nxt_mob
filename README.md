@@ -62,3 +62,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - Added Vazir font files (woff2) to `public/fonts/` with 5 weights (Thin, Light, Regular, Medium, Bold)
 - Defined `@font-face` rules in `globals.css`
 - Registered `--font-vazir` in `@theme inline` for Tailwind `font-vazir` class
+
+### `f6852a0` — Add TanStack Query with SSR prefetch/hydration pattern and example page
+
+- Installed `@tanstack/react-query` and `@tanstack/react-query-devtools`
+- Created `QueryProvider` in `src/providers/` with default `staleTime: 60s`
+- Added SSR example at `/examples/ssr-query` with prefetch + hydration
