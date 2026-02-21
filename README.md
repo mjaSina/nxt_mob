@@ -47,3 +47,11 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - Installed `antd@6.3.0`, `@ant-design/icons@6.1.0`, and `@ant-design/nextjs-registry@1.3.0`
 - Wrapped the app with `AntdRegistry` in `layout.tsx` to ensure proper SSR style injection
 - Ant Design components are now ready to use across the entire application
+
+### `96883fc` — Add custom Tailwind theme tokens: colors, spacing, text sizes, and border radius
+
+- Defined custom color palette: `primary`, `success`, `warning`, `danger`, `info` (each with light/dark variants)
+- Added `neutral` grayscale from 50 to 900
+- Created spacing tokens: `xs` (4px) through `3xl` (64px)
+- Added extra text sizes: `2xs` (10px), `xs` (12px)
+- Defined border radius tokens: `xs` (2px) through `full` (9999px)
