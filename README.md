@@ -70,6 +70,14 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - Refactored `useApi` hook to use Axios instead of native `fetch` — removes manual `JSON.stringify`, `res.ok` checks, and `res.text()` parsing
 - Added `.env.local` (development) and `.env.production` (production) for API base URL configuration (gitignored)
 
+### Add login page with Server Action
+
+- Created `/login` route with a login form using Ant Design components (`Input`, `Button`, `Card`, `Alert`)
+- Form data is submitted via a **Server Action** (`loginAction`) instead of a client-side API call
+- Used React 19's `useActionState` hook to manage form state, pending status, and server response
+- Server action performs validation and returns success/error messages in Persian
+- Button shows loading state while the action is in progress
+
 ### `f6852a0` — Add TanStack Query with SSR prefetch/hydration pattern and example page
 
 - Installed `@tanstack/react-query` and `@tanstack/react-query-devtools`
