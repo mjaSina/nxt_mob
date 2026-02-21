@@ -11,6 +11,7 @@ A [Next.js](https://nextjs.org) mobile-first application built with **Ant Design
 | TypeScript | 5.x |
 | Ant Design | 6.3.0 |
 | Tailwind CSS | 4.x |
+| TanStack Query | 5.x |
 | ESLint | 9.x |
 
 ## Getting Started
@@ -55,3 +56,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - Created spacing tokens: `xs` (4px) through `3xl` (64px)
 - Added extra text sizes: `2xs` (10px), `xs` (12px)
 - Defined border radius tokens: `xs` (2px) through `full` (9999px)
+
+### `aae920b` — Add Vazir font with @font-face and Tailwind font-vazir utility class
+
+- Added Vazir font files (woff2) to `public/fonts/` with 5 weights (Thin, Light, Regular, Medium, Bold)
+- Defined `@font-face` rules in `globals.css`
+- Registered `--font-vazir` in `@theme inline` for Tailwind `font-vazir` class
