@@ -7,6 +7,8 @@ import {
   type UseQueryOptions,
   type UseMutationOptions,
 } from "@tanstack/react-query";
+import api from "@/lib/axios";
+import type { AxiosRequestConfig } from "axios";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -25,7 +27,7 @@ export interface ApiConfig {
   delete?: string | ApiEndpoint;
 }
 
-interface FetchOptions {
+interface RequestOptions {
   params?: Record<string, string>;
   body?: unknown;
   headers?: Record<string, string>;
@@ -41,35 +43,24 @@ function resolveEndpoint(endpoint: string | ApiEndpoint): {
   return { url: endpoint.url, method: endpoint.method ?? "GET" };
 }
 
-function buildUrl(url: string, params?: Record<string, string>): string {
-  if (!params) return url;
-  const query = new URLSearchParams(params).toString();
-  return query ? `${url}?${query}` : url;
-}
-
 async function request<T>(
   endpoint: string | ApiEndpoint,
   defaultMethod: HttpMethod,
-  options?: FetchOptions,
+  options?: RequestOptions,
 ): Promise<T> {
   const { url, method: endpointMethod } = resolveEndpoint(endpoint);
   const method = endpointMethod !== "GET" ? endpointMethod : defaultMethod;
 
-  const res = await fetch(buildUrl(url, options?.params), {
+  const config: AxiosRequestConfig = {
+    url,
     method,
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    },
-    ...(options?.body ? { body: JSON.stringify(options.body) } : {}),
-  });
+    params: options?.params,
+    headers: options?.headers,
+    ...(options?.body ? { data: options.body } : {}),
+  };
 
-  if (!res.ok) {
-    throw new Error(`API Error: ${res.status} ${res.statusText}`);
-  }
-
-  const text = await res.text();
-  return text ? JSON.parse(text) : null;
+  const res = await api.request<T>(config);
+  return res.data;
 }
 
 export function useApi<TData = unknown>(
@@ -80,10 +71,7 @@ export function useApi<TData = unknown>(
 
   const query = useQuery<TData>({
     queryKey: config.queryKey,
-    queryFn: ({ signal }) =>
-      request<TData>(config.get, "GET", {
-        headers: signal ? {} : undefined,
-      }),
+    queryFn: () => request<TData>(config.get, "GET"),
     ...queryOptions,
   });
 
@@ -143,3 +131,4 @@ export function useApi<TData = unknown>(
 // 1. کوئری ["posts"] (queryKey خودش) invalidate میشه
 // 2. کوئری ["users"] invalidate میشه
 // 3. کوئری ["comments"] invalidate میشه
+

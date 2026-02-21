@@ -12,6 +12,7 @@ A [Next.js](https://nextjs.org) mobile-first application built with **Ant Design
 | Ant Design | 6.3.0 |
 | Tailwind CSS | 4.x |
 | TanStack Query | 5.x |
+| Axios | 1.x |
 | ESLint | 9.x |
 
 ## Getting Started
@@ -62,6 +63,12 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - Added Vazir font files (woff2) to `public/fonts/` with 5 weights (Thin, Light, Regular, Medium, Bold)
 - Defined `@font-face` rules in `globals.css`
 - Registered `--font-vazir` in `@theme inline` for Tailwind `font-vazir` class
+
+### `c36aa33` — Replace fetch with Axios and add API base URL via environment variables
+
+- Installed `axios` and created a shared Axios instance in `src/lib/axios.ts` with `baseURL` from `NEXT_PUBLIC_API_BASE_URL`
+- Refactored `useApi` hook to use Axios instead of native `fetch` — removes manual `JSON.stringify`, `res.ok` checks, and `res.text()` parsing
+- Added `.env.local` (development) and `.env.production` (production) for API base URL configuration (gitignored)
 
 ### `f6852a0` — Add TanStack Query with SSR prefetch/hydration pattern and example page
 
