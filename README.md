@@ -83,3 +83,12 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - Installed `@tanstack/react-query` and `@tanstack/react-query-devtools`
 - Created `QueryProvider` in `src/providers/` with default `staleTime: 60s`
 - Added SSR example at `/examples/ssr-query` with prefetch + hydration
+
+### Add proxy with auth guard and security headers
+
+- Created `src/proxy.ts` (Next.js 16 replacement for `middleware.ts`) to handle network-level request interception
+- **Auth Guard**: unauthenticated users are redirected to `/login` with a `callbackUrl` query param for post-login redirect
+- **Public paths**: `/login`, `/register`, `/forgot-password` are accessible without a token
+- **Logged-in redirect**: authenticated users visiting public paths (e.g. `/login`) are redirected to `/`
+- **Security headers**: sets `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, and `Permissions-Policy` on every response
+- **Matcher**: excludes static assets (`_next/static`, `_next/image`, images, favicon) from proxy execution
